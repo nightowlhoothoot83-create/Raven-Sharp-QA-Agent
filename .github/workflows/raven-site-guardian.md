@@ -13,9 +13,7 @@ permissions:
   contents: read
 
 tools:
-  bash:
-    - 'playwright-cli:*'
-    - 'cat:*'
+  bash: ['*']
   playwright:
     version: '0.1.17'
     mode: cli
