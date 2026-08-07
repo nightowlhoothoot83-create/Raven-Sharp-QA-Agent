@@ -1,0 +1,53 @@
+name: AdSense ads.txt Monitor
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check canonical ads.txt files
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='google.com, pub-1904958390525375, DIRECT, f08c47fec0942fa0'
+          sites=(
+            'https://wheelnamepicker.com.au/ads.txt'
+            'https://mycalendartools.net/ads.txt'
+            'https://mycalctools.net/ads.txt'
+          )
+
+          failed=0
+          for url in "${sites[@]}"; do
+            echo "::group::$url"
+            tmp="$(mktemp)"
+            code="$(curl -L --max-redirs 5 --connect-timeout 15 --max-time 30 -A 'Raven-AdsTxt-Monitor/1.0' -sS -o "$tmp" -w '%{http_code}' "$url" || true)"
+            content_type="$(curl -L --max-redirs 5 --connect-timeout 15 --max-time 30 -A 'Raven-AdsTxt-Monitor/1.0' -sSI "$url" 2>/dev/null | awk -F': ' 'tolower($1)=="content-type"{print $2}' | tail -1 | tr -d '\r' || true)"
+            echo "HTTP: $code"
+            echo "Content-Type: ${content_type:-unknown}"
+            echo 'Body:'
+            cat "$tmp" || true
+            echo
+
+            if [[ "$code" != '200' ]]; then
+              echo "::error::$url returned HTTP $code"
+              failed=1
+            elif ! grep -Fqx "$expected" "$tmp"; then
+              echo "::error::$url does not contain the exact expected AdSense publisher record"
+              failed=1
+            else
+              echo "OK: expected publisher record found"
+            fi
+            rm -f "$tmp"
+            echo '::endgroup::'
+          done
+
+          if [[ "$failed" -ne 0 ]]; then
+            exit 1
+          fi
