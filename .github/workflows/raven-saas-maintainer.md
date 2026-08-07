@@ -35,12 +35,13 @@ permissions:
   actions: read
   issues: read
   pull-requests: read
+  copilot-requests: write
 
 checkout:
   - repository: ${{ github.event.inputs.repo }}
     path: target
     fetch-depth: 0
-    github-token: ${{ secrets.CROSS_REPO_PAT }}
+    github-token: ${{ secrets.GH_AW_GITHUB_TOKEN }}
     current: true
 
 tools:
@@ -68,7 +69,7 @@ tools:
   github:
     mode: gh-proxy
     toolsets: [repos, issues, pull_requests, actions]
-    github-token: ${{ secrets.CROSS_REPO_PAT }}
+    github-token: ${{ secrets.GH_AW_GITHUB_TOKEN }}
     allowed-repos:
       - nightowlhoothoot83-create/raven-sharp-pod-automation
       - nightowlhoothoot83-create/raven-sharp-image-optimiser-upscaler
@@ -85,7 +86,7 @@ tools:
   web-fetch:
 
 safe-outputs:
-  github-token: ${{ secrets.CROSS_REPO_PAT }}
+  github-token: ${{ secrets.GH_AW_GITHUB_TOKEN }}
   create-pull-request:
     target-repo: ${{ github.event.inputs.repo }}
     allowed-repos:
