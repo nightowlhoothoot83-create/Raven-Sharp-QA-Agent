@@ -19,14 +19,19 @@ on:
         required: false
         type: string
 
+engine: codex
+
 permissions:
   contents: read
 
 tools:
+  bash:
+    - 'playwright-cli:*'
   web-search:
   web-fetch:
   playwright:
     version: '1.56.1'
+    mode: cli
 
 safe-outputs:
   create-issue:
@@ -43,9 +48,9 @@ Site/product page: `${{ github.event.inputs.site_url }}`
 Product/topic: `${{ github.event.inputs.product }}`
 Notes: `${{ github.event.inputs.notes }}`
 
-Inspect the supplied site/product first so recommendations are grounded in what the brand actually offers.
+Inspect the supplied site/product first with `playwright-cli` so recommendations are grounded in what the brand actually offers.
 
-Then use web search, direct source pages and Playwright where useful to identify credible affiliate programs and products that complement the user's own product rather than replacing it with a direct competitor.
+Then use web search, direct source pages and browser inspection where useful to identify credible affiliate programs and products that complement the user's own product rather than replacing it with a direct competitor.
 
 ## Produce an actionable opportunity brief
 
