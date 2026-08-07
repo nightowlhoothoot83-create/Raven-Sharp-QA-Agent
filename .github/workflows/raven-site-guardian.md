@@ -7,9 +7,10 @@ on:
     paths:
       - '.github/workflows/raven-site-guardian.lock.yml'
 
+engine: codex
+
 permissions:
   contents: read
-  copilot-requests: write
 
 tools:
   bash:
