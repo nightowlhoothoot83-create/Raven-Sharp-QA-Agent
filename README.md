@@ -25,6 +25,17 @@ Research agent for finding complementary affiliate products and programs that fi
 ### 4. Raven Marketing Worker
 Creates finished content and ad-copy packs from a real brand/product/site. It is an interim execution worker while Raven Content Creator and Ad Manager are being completed. It does not launch paid ads or spend money.
 
+### 5. Raven Art Marketplace Agent
+Browser Use Cloud worker for the user's own photography and artwork on art marketplaces such as Fine Art America and ArtPal.
+
+It uses a persistent Browser Use profile for logged-in marketplace sessions and a Browser Use workspace for photo files. It can inspect each image, upload it, write the finished title/description/keywords, choose relevant marketplace categories, configure sensible product options and prepare listings.
+
+Modes:
+- `prepare` — saves a private/draft listing where the marketplace supports it, or stops before the final public action
+- `publish-approved` — publishes only the already-prepared listings named in the run after the user enters the exact `PUBLISH APPROVED` confirmation
+
+It must not change account identity, passwords, payout/tax settings, subscription level, payment methods or accept new commercial/legal terms.
+
 ## SaaS targets
 
 - POD Automation — `https://ravensharppod.pages.dev/pipeline`
@@ -60,20 +71,33 @@ Agents may **not** autonomously:
 - delete production data
 - expose or request credentials in issues or logs
 
-Those remain approval-gated.
+Art-marketplace publication is a separate explicit approval path: `prepare` cannot publish, while `publish-approved` requires an exact confirmation in a manually triggered workflow and may publish only the named prepared batch.
 
 ## One-time GitHub setup
 
 GitHub Agentic Workflows run in GitHub Actions, so no Docker/WSL is required on the laptop.
 
-The full fleet needs only two repository secrets:
+The core GitHub agent fleet needs these repository secrets:
 
 1. `OPENAI_API_KEY` — used by the Affiliate Scout and Marketing Worker through the Codex engine. `CODEX_API_KEY` may be used instead if preferred.
 2. `GH_AW_GITHUB_TOKEN` — a fine-grained GitHub PAT scoped only to the Raven SaaS repositories, used by the Maintainer for cross-repository checkout and draft repair PRs.
 
 The SaaS Maintainer and Site Guardian use GitHub's recommended `copilot-requests: write` permission, so they do not require a separate Copilot PAT.
 
-Never paste a secret into chat, issues or source code. Add it in **GitHub → Raven-Sharp-QA-Agent → Settings → Secrets and variables → Actions**.
+### Browser Use setup for the Art Marketplace Agent
+
+The Art Marketplace Agent additionally needs:
+
+**Repository secret**
+- `BROWSER_USE_API_KEY` — Browser Use Cloud API key
+
+**Repository variables**
+- `BROWSER_USE_ART_PROFILE_ID` — Browser Use profile that contains the user's logged-in Fine Art America / ArtPal browser state
+- `BROWSER_USE_ART_WORKSPACE_ID` — Browser Use workspace containing the photos/art files to list
+
+Marketplace passwords should not be stored in this repo or passed to the agent. Browser Use profile state handles the authenticated session instead.
+
+Never paste a secret into chat, issues or source code. Add secrets in **GitHub → Raven-Sharp-QA-Agent → Settings → Secrets and variables → Actions**.
 
 The Markdown agent workflows in `.github/workflows/*.md` are compiled into hardened `.lock.yml` workflows. The compiler stages generated output for promotion because the default Actions app cannot itself write workflow files.
 
