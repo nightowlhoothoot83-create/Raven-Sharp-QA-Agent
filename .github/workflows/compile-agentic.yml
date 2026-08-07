@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/*.md'
       - '.gitattributes'
+      - '.github/workflows/compile-agentic.yml'
   workflow_dispatch:
 
 permissions:
@@ -36,14 +37,24 @@ jobs:
         run: |
           gh aw compile
 
-      - name: Commit generated lock workflows
+      - name: Stage compiled workflows outside .github
         run: |
-          if [[ -z "$(git status --porcelain -- .github/workflows .gitattributes)" ]]; then
-            echo 'No generated workflow changes.'
+          rm -rf generated-locks
+          mkdir -p generated-locks
+          cp .github/workflows/*.lock.yml generated-locks/
+          if [[ -f .github/aw/actions-lock.json ]]; then
+            cp .github/aw/actions-lock.json generated-locks/actions-lock.json
+          fi
+
+      - name: Commit staged compiler output
+        run: |
+          if [[ -z "$(git status --porcelain -- generated-locks)" ]]; then
+            echo 'No staged compiler changes.'
             exit 0
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add .github/workflows/*.lock.yml .gitattributes
-          git commit -m 'Compile Raven agentic workflows'
-          git push
+          git add generated-locks
+          git commit -m 'Stage compiled Raven agent workflows'
+          git pull --rebase origin main
+          git push origin HEAD:main
