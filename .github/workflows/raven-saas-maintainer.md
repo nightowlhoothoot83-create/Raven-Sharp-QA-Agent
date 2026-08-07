@@ -30,12 +30,13 @@ on:
         required: false
         type: string
 
+engine: codex
+
 permissions:
   contents: read
   actions: read
   issues: read
   pull-requests: read
-  copilot-requests: write
 
 checkout:
   - repository: ${{ github.event.inputs.repo }}
