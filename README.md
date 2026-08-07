@@ -66,11 +66,14 @@ Those remain approval-gated.
 
 GitHub Agentic Workflows run in GitHub Actions, so no Docker/WSL is required on the laptop.
 
-Two repository secrets are needed before the full fleet can run:
+Three repository secrets are used by the full fleet:
 
-1. `COPILOT_GITHUB_TOKEN` — the token GitHub Agentic Workflows uses for the default Copilot engine.
-2. `CROSS_REPO_PAT` — a fine-grained token scoped only to the Raven SaaS repositories, used by the Maintainer to check out target code and create draft repair PRs.
+1. `COPILOT_GITHUB_TOKEN` — used by the SaaS Maintainer and Site Guardian through GitHub's Copilot agent engine.
+2. `OPENAI_API_KEY` — used by the Affiliate Scout and Marketing Worker through the Codex engine so they can use current web research.
+3. `CROSS_REPO_PAT` — a fine-grained GitHub token scoped only to the Raven SaaS repositories, used by the Maintainer to check out target code and create draft repair PRs.
 
-Never paste either secret into chat, issues or source code. Add them in **GitHub → Raven-Sharp-QA-Agent → Settings → Secrets and variables → Actions**.
+Never paste any secret into chat, issues or source code. Add them in **GitHub → Raven-Sharp-QA-Agent → Settings → Secrets and variables → Actions**.
 
 The Markdown agent workflows in `.github/workflows/*.md` are compiled into hardened `.lock.yml` workflows by the compiler workflow in this repo.
+
+A separate deterministic `ads-txt-monitor.yml` also checks the three AdSense sites every six hours and does not need an AI key.
