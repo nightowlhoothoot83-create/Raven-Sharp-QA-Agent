@@ -2,6 +2,10 @@
 on:
   schedule: daily
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/raven-site-guardian.lock.yml'
 
 permissions:
   contents: read
