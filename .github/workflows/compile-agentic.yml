@@ -1,0 +1,45 @@
+name: Compile Raven Agentic Workflows
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/*.md'
+      - '.gitattributes'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install GitHub Agentic Workflows extension
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh extension install github/gh-aw --force
+
+      - name: Compile agent workflows
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh aw compile
+
+      - name: Commit generated lock workflows
+        run: |
+          if git diff --quiet -- .github/workflows '*.lock.yml' .gitattributes; then
+            echo 'No generated workflow changes.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/workflows/*.lock.yml .gitattributes
+          git commit -m 'Compile Raven agentic workflows'
+          git push
