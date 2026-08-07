@@ -37,7 +37,7 @@ jobs:
         run: |
           gh aw compile
 
-      - name: Stage compiled workflows outside .github
+      - name: Stage compiled workflows and live locks
         run: |
           rm -rf generated-locks
           mkdir -p generated-locks
@@ -46,14 +46,14 @@ jobs:
             cp .github/aw/actions-lock.json generated-locks/actions-lock.json
           fi
 
-      - name: Commit staged compiler output
+      - name: Commit compiled workflow output
         run: |
-          if [[ -z "$(git status --porcelain -- generated-locks)" ]]; then
-            echo 'No staged compiler changes.'
+          if [[ -z "$(git status --porcelain -- .github/workflows/*.lock.yml generated-locks)" ]]; then
+            echo 'No compiled workflow changes.'
             exit 0
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add generated-locks
-          git commit -m 'Stage compiled Raven agent workflows'
+          git add -f .github/workflows/*.lock.yml generated-locks
+          git commit -m 'Promote compiled Raven agent workflows'
           git push origin HEAD:main
