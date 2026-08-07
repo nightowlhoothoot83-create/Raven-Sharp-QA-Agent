@@ -27,14 +27,19 @@ on:
         required: false
         type: string
 
+engine: codex
+
 permissions:
   contents: read
 
 tools:
+  bash:
+    - 'playwright-cli:*'
   web-search:
   web-fetch:
   playwright:
     version: '1.56.1'
+    mode: cli
 
 safe-outputs:
   create-issue:
@@ -52,7 +57,7 @@ Goal: `${{ github.event.inputs.goal }}`
 Channel: `${{ github.event.inputs.channel }}`
 Notes: `${{ github.event.inputs.notes }}`
 
-Inspect the supplied site/product first. Base claims, features, prices and positioning on what can actually be verified there. If a critical fact is unavailable, avoid inventing it.
+Inspect the supplied site/product first with `playwright-cli`. Base claims, features, prices and positioning on what can actually be verified there. If a critical fact is unavailable, avoid inventing it.
 
 Where useful, research the market and current channel conventions, but keep the brand's actual product at the centre.
 
