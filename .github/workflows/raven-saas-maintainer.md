@@ -47,28 +47,7 @@ checkout:
 
 tools:
   edit:
-  bash:
-    - 'node:*'
-    - 'npm:*'
-    - 'npx:*'
-    - 'pnpm:*'
-    - 'yarn:*'
-    - 'python:*'
-    - 'python3:*'
-    - 'pip:*'
-    - 'pytest:*'
-    - 'playwright-cli:*'
-    - 'git status'
-    - 'git diff:*'
-    - 'git log:*'
-    - 'git show:*'
-    - 'git grep:*'
-    - 'ls:*'
-    - 'cat:*'
-    - 'find:*'
-    - 'grep:*'
-    - 'head:*'
-    - 'tail:*'
+  bash: ['*']
   github:
     mode: gh-proxy
     toolsets: [repos, issues, pull_requests, actions]
