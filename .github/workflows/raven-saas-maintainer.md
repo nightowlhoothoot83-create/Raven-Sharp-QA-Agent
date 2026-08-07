@@ -81,7 +81,7 @@ tools:
       - nightowlhoothoot83-create/raven-sharp-smart-cleaner-web
     min-integrity: approved
   playwright:
-    version: '1.56.1'
+    version: '0.1.17'
     mode: cli
   web-fetch:
 
