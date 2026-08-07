@@ -1,0 +1,103 @@
+name: Raven Art Marketplace Agent
+
+on:
+  workflow_dispatch:
+    inputs:
+      marketplace:
+        description: 'Marketplace to operate'
+        required: true
+        type: choice
+        options:
+          - fine-art-america
+          - artpal
+          - both
+        default: fine-art-america
+      mode:
+        description: 'Prepare drafts or publish already-approved prepared listings'
+        required: true
+        type: choice
+        options:
+          - prepare
+          - publish-approved
+        default: prepare
+      photo_batch:
+        description: 'Exact Browser Use workspace file names/prefixes or a short batch description'
+        required: true
+        type: string
+      collection:
+        description: 'Optional collection/series name'
+        required: false
+        type: string
+      listing_notes:
+        description: 'Optional factual notes: subject, location, capture details, story, etc.'
+        required: false
+        type: string
+      pricing_notes:
+        description: 'Optional pricing/product instructions; otherwise preserve marketplace defaults'
+        required: false
+        type: string
+      max_items:
+        description: 'Maximum artworks to process, capped at 10'
+        required: true
+        type: string
+        default: '5'
+      publish_confirmation:
+        description: 'For publish-approved only, enter exactly: PUBLISH APPROVED'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: raven-art-marketplace-agent
+  cancel-in-progress: false
+
+jobs:
+  run-browser-agent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      BROWSER_USE_API_KEY: ${{ secrets.BROWSER_USE_API_KEY }}
+      BROWSER_USE_ART_PROFILE_ID: ${{ vars.BROWSER_USE_ART_PROFILE_ID }}
+      BROWSER_USE_ART_WORKSPACE_ID: ${{ vars.BROWSER_USE_ART_WORKSPACE_ID }}
+      MARKETPLACE: ${{ inputs.marketplace }}
+      MODE: ${{ inputs.mode }}
+      PHOTO_BATCH: ${{ inputs.photo_batch }}
+      COLLECTION: ${{ inputs.collection }}
+      LISTING_NOTES: ${{ inputs.listing_notes }}
+      PRICING_NOTES: ${{ inputs.pricing_notes }}
+      MAX_ITEMS: ${{ inputs.max_items }}
+      PUBLISH_CONFIRMATION: ${{ inputs.publish_confirmation }}
+
+    steps:
+      - name: Checkout command center
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Validate Browser Use configuration
+        shell: bash
+        run: |
+          missing=0
+          for name in BROWSER_USE_API_KEY BROWSER_USE_ART_PROFILE_ID BROWSER_USE_ART_WORKSPACE_ID; do
+            if [[ -z "${!name}" ]]; then
+              echo "::error::Missing GitHub secret/variable: ${name}"
+              missing=1
+            fi
+          done
+          if [[ "$MODE" == "publish-approved" && "$PUBLISH_CONFIRMATION" != "PUBLISH APPROVED" ]]; then
+            echo "::error::Publishing requires the exact confirmation: PUBLISH APPROVED"
+            missing=1
+          fi
+          exit "$missing"
+
+      - name: Install Browser Use Cloud SDK
+        run: python -m pip install --disable-pip-version-check browser-use-sdk==3.10.0
+
+      - name: Run Raven Art Marketplace Agent
+        run: python scripts/raven_art_marketplace_agent.py
