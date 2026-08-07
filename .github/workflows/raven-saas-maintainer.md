@@ -76,6 +76,7 @@ tools:
       - nightowlhoothoot83-create/raven-sharp-smart-ai-cleaner
       - nightowlhoothoot83-create/raven-sharp-hub
       - nightowlhoothoot83-create/raven-sharp-smart-cleaner-web
+    min-integrity: approved
   playwright:
     version: '1.56.1'
     mode: cli
