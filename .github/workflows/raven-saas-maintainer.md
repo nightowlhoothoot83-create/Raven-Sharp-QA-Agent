@@ -7,14 +7,14 @@ on:
         required: true
         type: choice
         options:
-          - nightowlhoothoot83-create/Raven-Sharp-POD-Automation
-          - nightowlhoothoot83-create/Raven-Sharp-Image-Optimiser-Upscaler
-          - nightowlhoothoot83-create/Raven-Sharp-Ad-Manager
-          - nightowlhoothoot83-create/Raven-Sharp-Book-Creator
-          - nightowlhoothoot83-create/Raven-Sharp-Content-Creator
-          - nightowlhoothoot83-create/Raven-Sharp-Smart-AI-Cleaner
-          - nightowlhoothoot83-create/Raven-Sharp-Hub
-          - nightowlhoothoot83-create/Raven-Sharp-Smart-Cleaner-Web
+          - nightowlhoothoot83-create/raven-sharp-pod-automation
+          - nightowlhoothoot83-create/raven-sharp-image-optimiser-upscaler
+          - nightowlhoothoot83-create/raven-sharp-ad-manager
+          - nightowlhoothoot83-create/raven-sharp-book-creator
+          - nightowlhoothoot83-create/raven-sharp-content-creator
+          - nightowlhoothoot83-create/raven-sharp-smart-ai-cleaner
+          - nightowlhoothoot83-create/raven-sharp-hub
+          - nightowlhoothoot83-create/raven-sharp-smart-cleaner-web
       url:
         description: 'Live URL/page to inspect'
         required: true
@@ -53,6 +53,7 @@ tools:
     - 'python3:*'
     - 'pip:*'
     - 'pytest:*'
+    - 'playwright-cli:*'
     - 'git status'
     - 'git diff:*'
     - 'git log:*'
@@ -67,38 +68,38 @@ tools:
     toolsets: [repos, issues, pull_requests, actions]
     github-token: ${{ secrets.CROSS_REPO_PAT }}
     allowed-repos:
-      - nightowlhoothoot83-create/Raven-Sharp-POD-Automation
-      - nightowlhoothoot83-create/Raven-Sharp-Image-Optimiser-Upscaler
-      - nightowlhoothoot83-create/Raven-Sharp-Ad-Manager
-      - nightowlhoothoot83-create/Raven-Sharp-Book-Creator
-      - nightowlhoothoot83-create/Raven-Sharp-Content-Creator
-      - nightowlhoothoot83-create/Raven-Sharp-Smart-AI-Cleaner
-      - nightowlhoothoot83-create/Raven-Sharp-Hub
-      - nightowlhoothoot83-create/Raven-Sharp-Smart-Cleaner-Web
+      - nightowlhoothoot83-create/raven-sharp-pod-automation
+      - nightowlhoothoot83-create/raven-sharp-image-optimiser-upscaler
+      - nightowlhoothoot83-create/raven-sharp-ad-manager
+      - nightowlhoothoot83-create/raven-sharp-book-creator
+      - nightowlhoothoot83-create/raven-sharp-content-creator
+      - nightowlhoothoot83-create/raven-sharp-smart-ai-cleaner
+      - nightowlhoothoot83-create/raven-sharp-hub
+      - nightowlhoothoot83-create/raven-sharp-smart-cleaner-web
   playwright:
     version: '1.56.1'
+    mode: cli
   web-fetch:
-  web-search:
 
 safe-outputs:
   github-token: ${{ secrets.CROSS_REPO_PAT }}
   create-pull-request:
     target-repo: ${{ github.event.inputs.repo }}
     allowed-repos:
-      - nightowlhoothoot83-create/Raven-Sharp-POD-Automation
-      - nightowlhoothoot83-create/Raven-Sharp-Image-Optimiser-Upscaler
-      - nightowlhoothoot83-create/Raven-Sharp-Ad-Manager
-      - nightowlhoothoot83-create/Raven-Sharp-Book-Creator
-      - nightowlhoothoot83-create/Raven-Sharp-Content-Creator
-      - nightowlhoothoot83-create/Raven-Sharp-Smart-AI-Cleaner
-      - nightowlhoothoot83-create/Raven-Sharp-Hub
-      - nightowlhoothoot83-create/Raven-Sharp-Smart-Cleaner-Web
+      - nightowlhoothoot83-create/raven-sharp-pod-automation
+      - nightowlhoothoot83-create/raven-sharp-image-optimiser-upscaler
+      - nightowlhoothoot83-create/raven-sharp-ad-manager
+      - nightowlhoothoot83-create/raven-sharp-book-creator
+      - nightowlhoothoot83-create/raven-sharp-content-creator
+      - nightowlhoothoot83-create/raven-sharp-smart-ai-cleaner
+      - nightowlhoothoot83-create/raven-sharp-hub
+      - nightowlhoothoot83-create/raven-sharp-smart-cleaner-web
     title-prefix: '[Raven Agent] '
     draft: true
     max: 1
     protected-files: fallback-to-issue
   create-issue:
-    target-repo: nightowlhoothoot83-create/Raven-Sharp-QA-Agent
+    target-repo: nightowlhoothoot83-create/raven-sharp-qa-agent
     title-prefix: '[Maintainer blocked] '
     max: 1
 ---
@@ -116,7 +117,7 @@ Start by changing directory into `${{ github.workspace }}/target`.
 
 ## Required workflow
 
-1. Inspect the live URL with Playwright before editing code. Capture enough evidence to understand the current behaviour. Check desktop and a mobile-sized viewport where relevant.
+1. Inspect the live URL with `playwright-cli` before editing code. Capture enough evidence to understand the current behaviour. Check desktop and a mobile-sized viewport where relevant.
 2. Record browser console errors, page errors, failed requests, broken controls, headings and obvious layout/accessibility problems that relate to the requested work.
 3. Inspect the target repository and identify the code responsible. Do not guess based only on the live page.
 4. Make the smallest coherent source-code change that actually solves the requested job.
