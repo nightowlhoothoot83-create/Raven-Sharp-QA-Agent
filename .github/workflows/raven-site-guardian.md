@@ -15,7 +15,7 @@ tools:
   bash:
     - 'playwright-cli:*'
   playwright:
-    version: '1.56.1'
+    version: '0.1.17'
     mode: cli
   web-fetch:
 
