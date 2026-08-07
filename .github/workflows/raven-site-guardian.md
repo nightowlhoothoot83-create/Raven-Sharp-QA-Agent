@@ -89,6 +89,8 @@ For each AdSense site, additionally fetch `/ads.txt` from the canonical root dom
 - whether the expected publisher record is present exactly;
 - whether redirects prevent the crawler from reaching a successful final response.
 
+At the end of the run, produce a compact fleet-status summary naming each Raven SaaS and its classification so the next repair can be chosen from evidence instead of guesswork.
+
 Do not create issues for minor taste preferences. Create an issue only for a concrete defect, revenue blocker, meaningful regression, misleading product status/pricing, or missing access path. Group related findings by site so the repo does not fill with noise.
 
 If all checked public surfaces are healthy, use the no-op output and create no issue. Do not overclaim authenticated/core-function health when it was not tested.
