@@ -7,10 +7,12 @@ permissions:
   contents: read
 
 tools:
+  bash:
+    - 'playwright-cli:*'
   playwright:
     version: '1.56.1'
+    mode: cli
   web-fetch:
-  web-search:
 
 safe-outputs:
   create-issue:
@@ -43,7 +45,7 @@ Expected ads.txt record:
 
 ## Checks
 
-Use Playwright on every public page you inspect. Prefer direct observation over assumptions.
+Use `playwright-cli` on every public page you inspect. Prefer direct observation over assumptions.
 
 For the SaaS sites, check:
 - page loads and obvious HTTP/browser failures
