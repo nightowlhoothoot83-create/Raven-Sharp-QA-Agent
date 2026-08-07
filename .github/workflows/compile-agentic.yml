@@ -11,12 +11,16 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: raven-agentic-compile
+  cancel-in-progress: true
+
 jobs:
   compile:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -34,7 +38,7 @@ jobs:
 
       - name: Commit generated lock workflows
         run: |
-          if git diff --quiet -- .github/workflows '*.lock.yml' .gitattributes; then
+          if [[ -z "$(git status --porcelain -- .github/workflows .gitattributes)" ]]; then
             echo 'No generated workflow changes.'
             exit 0
           fi
