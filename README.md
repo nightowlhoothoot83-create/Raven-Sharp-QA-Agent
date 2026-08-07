@@ -66,14 +66,15 @@ Those remain approval-gated.
 
 GitHub Agentic Workflows run in GitHub Actions, so no Docker/WSL is required on the laptop.
 
-Three repository secrets are used by the full fleet:
+The full fleet needs only two repository secrets:
 
-1. `COPILOT_GITHUB_TOKEN` — used by the SaaS Maintainer and Site Guardian through GitHub's Copilot agent engine.
-2. `OPENAI_API_KEY` — used by the Affiliate Scout and Marketing Worker through the Codex engine so they can use current web research.
-3. `CROSS_REPO_PAT` — a fine-grained GitHub token scoped only to the Raven SaaS repositories, used by the Maintainer to check out target code and create draft repair PRs.
+1. `OPENAI_API_KEY` — used by the Affiliate Scout and Marketing Worker through the Codex engine. `CODEX_API_KEY` may be used instead if preferred.
+2. `GH_AW_GITHUB_TOKEN` — a fine-grained GitHub PAT scoped only to the Raven SaaS repositories, used by the Maintainer for cross-repository checkout and draft repair PRs.
 
-Never paste any secret into chat, issues or source code. Add them in **GitHub → Raven-Sharp-QA-Agent → Settings → Secrets and variables → Actions**.
+The SaaS Maintainer and Site Guardian use GitHub's recommended `copilot-requests: write` permission, so they do not require a separate Copilot PAT.
 
-The Markdown agent workflows in `.github/workflows/*.md` are compiled into hardened `.lock.yml` workflows by the compiler workflow in this repo.
+Never paste a secret into chat, issues or source code. Add it in **GitHub → Raven-Sharp-QA-Agent → Settings → Secrets and variables → Actions**.
 
-A separate deterministic `ads-txt-monitor.yml` also checks the three AdSense sites every six hours and does not need an AI key.
+The Markdown agent workflows in `.github/workflows/*.md` are compiled into hardened `.lock.yml` workflows. The compiler stages generated output for promotion because the default Actions app cannot itself write workflow files.
+
+A separate deterministic `ads-txt-monitor.yml` checks the three AdSense sites every six hours and does not need an AI key.
