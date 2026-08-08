@@ -8,6 +8,21 @@ on:
       - '.github/workflows/raven-site-guardian.lock.yml'
 
 engine: codex
+strict: false
+
+network:
+  allowed:
+    - defaults
+    - github
+    - playwright
+    - chrome
+    - fonts
+    - "raven-sharp.com"
+    - "pages.dev"
+    - "up.railway.app"
+    - "wheelnamepicker.com.au"
+    - "mycalendartools.net"
+    - "mycalctools.net"
 
 permissions:
   contents: read
@@ -27,7 +42,7 @@ safe-outputs:
 
 # Raven Site Guardian
 
-Audit the live Raven Sharp / Ascension Digital Group sites below. This is a browser-first **core-function, regression and revenue-blocker check**, not a generic SEO essay.
+Audit the live Raven Sharp / Ascension Digital Group sites below. This is a browser-first **core-function, regression, indexability and revenue-blocker check**, not a generic SEO essay.
 
 Before testing, read `${{ github.workspace }}/specs/RAVEN_RECOVERY_CONTRACT.md`. Use it to distinguish a real product from a page that merely looks complete. Public-page checks cannot prove authenticated functionality, so never report a product as fully healthy when the core job was not actually testable.
 
@@ -56,7 +71,7 @@ Expected ads.txt record:
 
 ## Checks
 
-Use `playwright-cli` on every public page you inspect. Prefer direct observation over assumptions.
+Use `playwright-cli` on every public HTML page you inspect. Prefer direct observation over assumptions.
 
 For the Raven Hub, check:
 - each SaaS can be identified quickly by its actual job, not vague/generic wording;
@@ -83,15 +98,33 @@ Classify each SaaS finding as one of:
 
 Do **not** call a SaaS fully healthy simply because its homepage returned 200.
 
-For each AdSense site, additionally fetch `/ads.txt` from the canonical root domain and record:
+For each AdSense site, perform a concrete indexability crawl in addition to the browser review:
+- fetch `/robots.txt` and confirm Google is not accidentally blocked;
+- fetch `/sitemap.xml` and parse every listed URL;
+- verify each sitemap URL reaches a successful final response without a redirect loop, 403, 404 or 5xx;
+- verify indexable pages do not contain an accidental `noindex` directive;
+- inspect each page's canonical URL and confirm it points to the intended final canonical page;
+- flag canonicals that point to a 404, a redirect loop, a different unintended page, or a non-indexable URL;
+- flag sitemap entries that are themselves redirects instead of final canonical URLs;
+- check internal links from the homepage and major tool pages for broken 404/5xx destinations;
+- distinguish intentional redirects and intentional canonical alternatives from genuine defects rather than treating every non-indexed Search Console category as an error.
+
+For each AdSense site, also fetch `/ads.txt` from the canonical root domain and record:
 - HTTP status;
 - whether the response is plain readable text rather than HTML/error content;
 - whether the expected publisher record is present exactly;
 - whether redirects prevent the crawler from reaching a successful final response.
 
-At the end, include one compact fleet-status table in the run summary with each Raven SaaS URL, classification, and the single most important observed blocker or proof point. This summary is for recovery triage, not marketing.
+When reporting an indexability finding, classify it as one of:
+- **SITE-DEFECT** — our site is causing the problem, such as accidental 403, 404, 5xx, redirect loop, broken canonical, noindex, robots block, or bad sitemap entry;
+- **INTENTIONAL** — redirect/canonical behaviour is deliberate and correct;
+- **GOOGLE-STATE** — Google has discovered/crawled but chosen not to index and no concrete site-side crawl/indexability defect is observable.
 
-Do not create issues for minor taste preferences. Create an issue only for a concrete defect, revenue blocker, meaningful regression, misleading product status/pricing, or missing access path. Group related findings by site so the repo does not fill with noise.
+Do not claim that `Discovered - currently not indexed` or `Crawled - currently not indexed` is automatically repairable unless a concrete site-side defect is found. Search Console can lag behind live fixes until Google recrawls.
+
+At the end, include one compact fleet-status table in the run summary with each Raven SaaS URL, classification, and the single most important observed blocker or proof point. Also include a compact AdSense indexability table with each site, crawl/indexability status, and the highest-priority concrete site defect if any. This summary is for recovery triage, not marketing.
+
+Do not create issues for minor taste preferences. Create an issue only for a concrete defect, revenue blocker, meaningful regression, misleading product status/pricing, missing access path, or SITE-DEFECT indexability problem. Group related findings by site so the repo does not fill with noise.
 
 If all checked public surfaces are healthy, use the no-op output and create no issue. Do not overclaim authenticated/core-function health when it was not tested.
 
